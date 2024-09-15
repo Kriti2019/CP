@@ -1,25 +1,34 @@
 class Solution {
 public:
-    int fun(int ind,int res,vector<int>& arr,vector<vector<int>>&dp){
-        if(ind==0){
-            if(res%arr[0]==0) return res/arr[0];
-            else return 1e9;
-        }
-        if(dp[ind][res]!=-1)return dp[ind][res];
-        int notpick=0+ fun(ind-1,res,arr,dp);
-        int pick=1e9;
-        if(arr[ind]<=res){
-            pick=1+fun(ind,res-arr[ind],arr,dp);
-        }
-        return dp[ind][res]=min(pick,notpick);
-
-    }
+   
     int coinChange(vector<int>& arr, int k) {
         int n=arr.size();
-        vector<vector<int>>dp(n,vector<int>(k+1,-1));
-        int ans=fun(n-1,k,arr,dp);
-        if(ans>=1e9)return -1;
-        else return ans;
+         
+        vector<int>prev(k+1,0),curr(k+1,0);
+        for (int target = 0; target <= k; target++) {
+            if (target % arr[0] == 0) 
+                prev[target] = target / arr[0];  // Minimum coins when we only have the first coin
+            else 
+                prev[target] = 1e9;  // Impossible case
+        }
         
+        // Fill dp for all coins starting from the second one (ind = 1)
+        for (int ind = 1; ind < n; ind++) {
+            for (int target = 0; target <= k; target++) {
+                int notpick = 0 + prev[target];  // Don't pick the current coin
+                int pick = 1e9;
+                
+                if (arr[ind] <= target) {
+                    pick = 1 + curr[target - arr[ind]];  // Pick the current coin
+                }
+                
+                curr[target] = min(pick, notpick);  // Take the minimum of both options
+            }
+            prev = curr;  // Move to the next row
+        }
+        
+        // If no solution, return -1
+        if (prev[k] >= 1e9) return -1;
+        return prev[k];
     }
 };
