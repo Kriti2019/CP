@@ -1,0 +1,35 @@
+class Solution {
+public:
+    bool isBipartite(vector<vector<int>>& graph) {
+        int n = graph.size();
+        vector<int> color(n, -1); // -1 indicates that the node has not been colored yet
+
+        // Check each component of the graph
+        for (int i = 0; i < n; i++) {
+            if (color[i] == -1) { // If the node hasn't been colored, start BFS from this node
+                queue<int> q;
+                q.push(i);
+                color[i] = 0; // Start coloring the node with 0
+                
+                while (!q.empty()) {
+                    int node = q.front();
+                    q.pop();
+                    
+                    for (int neighbor : graph[node]) {
+                        if (color[neighbor] == -1) {
+                            // Color the neighbor with the opposite color
+                            color[neighbor] = 1 - color[node];
+                            q.push(neighbor);
+                        } else if (color[neighbor] == color[node]) {
+                            // If the neighbor has the same color, the graph is not bipartite
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return true; // If no conflicts 
+        
+    }
+};
